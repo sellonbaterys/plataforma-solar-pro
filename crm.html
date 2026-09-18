@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM — Plataforma Solar PRO</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07131A;--bg-2:#0F1E27;--bg-3:#16262F;--field:#16232C;
+  --neon:#22E5A0;--neon-2:#10B981;--glow:rgba(34,229,160,.28);--glow-soft:rgba(34,229,160,.12);
+  --txt:#EAF3F6;--mute:#8FA3AD;--line:rgba(255,255,255,.08);--line-2:rgba(34,229,160,.34);
+  --warn:#F2C14E;--red:#FF6B5B;--sky:#5FD4FF;
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;
+  background:radial-gradient(900px 500px at 50% -220px,rgba(34,229,160,.10),transparent 70%),var(--bg);
+  -webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;letter-spacing:-.02em}
+[hidden]{display:none!important}
+button{font:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--neon);outline-offset:2px}
+label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:6px}
+input,select,textarea{width:100%;background:var(--field);color:var(--txt);border:1px solid var(--line);
+  border-radius:10px;padding:11px 13px;font:inherit;font-size:14.5px}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--neon);box-shadow:0 0 0 3px var(--glow-soft)}
+textarea{resize:vertical;min-height:70px}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--neon) 50%),
+  linear-gradient(135deg,var(--neon) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 52%,calc(100% - 12px) 52%;background-size:5px 5px;
+  background-repeat:no-repeat;padding-right:34px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--field);color:var(--txt);
+  border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600;transition:all .18s}
+.btn:hover{border-color:var(--neon);color:var(--neon)}
+.btn.pri{background:var(--neon);color:#052018;border-color:var(--neon);box-shadow:0 0 22px var(--glow)}
+.btn.pri:hover{background:var(--neon-2);color:#052018}
+.btn.sm{padding:7px 12px;font-size:12.5px}
+.btn.dan:hover{border-color:var(--red);color:var(--red)}
+
+/* ---------- entrada ---------- */
+.entrada{min-height:100vh;display:grid;place-items:center;padding:24px}
+.cartao{width:100%;max-width:440px;border:1px solid var(--line-2);border-radius:22px;padding:32px;
+  background:linear-gradient(180deg,rgba(34,229,160,.09),transparent),var(--bg-2);
+  box-shadow:0 0 80px rgba(34,229,160,.12)}
+.marca{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--mute);text-align:center}
+.marca b{display:block;font-size:22px;letter-spacing:-.02em;color:var(--txt);margin-top:5px;font-weight:800}
+.pro{background:var(--neon);color:#052018;font-family:'JetBrains Mono',monospace;font-weight:700;
+  font-size:10px;padding:3px 7px;border-radius:6px;vertical-align:3px}
+.cartao h2{font-size:20px;margin:24px 0 6px;text-align:center}
+.cartao .sub{color:var(--mute);font-size:13.5px;text-align:center;margin-bottom:22px}
+.campo{margin-bottom:14px}
+.troca{text-align:center;margin-top:18px;font-size:13.5px;color:var(--mute)}
+.troca a{color:var(--neon);cursor:pointer;text-decoration:none}
+.erro{color:var(--red);font-size:13px;margin-top:10px;display:none}
+.aviso{font-size:11.5px;color:var(--mute);margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
+  line-height:1.5}
+
+/* ---------- topo ---------- */
+.topo{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);
+  background:rgba(7,19,26,.92);backdrop-filter:blur(12px)}
+.topo .in{max-width:1500px;margin:0 auto;padding:0 20px;height:58px;display:flex;align-items:center;
+  justify-content:space-between;gap:16px}
+.logo{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute);line-height:1}
+.logo b{display:block;font-size:15px;letter-spacing:-.02em;color:var(--txt);margin-top:3px;font-weight:800}
+.abas{display:flex;gap:4px;background:var(--bg-2);border:1px solid var(--line);border-radius:11px;padding:4px}
+.abas button{background:transparent;border:0;color:var(--mute);border-radius:8px;padding:8px 15px;
+  font-size:13.5px;font-weight:600;cursor:pointer}
+.abas button[aria-selected=true]{background:var(--neon);color:#052018}
+.user{display:flex;align-items:center;gap:11px}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(34,229,160,.15);
+  color:var(--neon);font-weight:700;font-size:13px}
+.user .nm{font-size:13.5px;font-weight:600;line-height:1.2}
+.user .em{font-size:11.5px;color:var(--mute)}
+@media(max-width:820px){.user .nm,.user .em{display:none}}
+
+.wrap{max-width:1500px;margin:0 auto;padding:22px 20px 60px}
+
+/* ---------- indicadores ---------- */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:18px}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpis>div{background:var(--bg-2);padding:15px 18px}
+.kpis .k{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.kpis .v{font-family:'JetBrains Mono',monospace;font-size:23px;font-weight:700;margin-top:5px}
+.kpis .v.neon{color:var(--neon)}
+.kpis .d{font-size:11px;color:var(--mute);margin-top:3px}
+
+.barra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.barra input[type=text]{flex:1;min-width:200px}
+.barra select{width:auto;min-width:150px}
+
+/* ---------- kanban ---------- */
+.kanban{display:grid;grid-template-columns:repeat(6,minmax(212px,1fr));gap:12px;overflow-x:auto;
+  padding-bottom:10px}
+.col{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:180px;
+  transition:border-color .18s,background .18s}
+.col.alvo{border-color:var(--neon);background:rgba(34,229,160,.05)}
+.col h3{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.col h3 i{font-style:normal;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neon);
+  background:rgba(34,229,160,.13);border-radius:6px;padding:2px 7px}
+.col .soma{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mute);margin-bottom:11px;
+  padding-bottom:9px;border-bottom:1px solid var(--line)}
+.card{background:var(--bg-3);border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:9px;
+  cursor:grab;transition:all .18s}
+.card:hover{border-color:var(--line-2);transform:translateY(-1px)}
+.card.arrastando{opacity:.4}
+.card.quente{border-left:3px solid var(--neon)}
+.card .n{font-weight:700;font-size:14px;line-height:1.25}
+.card .c{font-size:11.5px;color:var(--mute);margin-top:3px}
+.card .v{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--neon);font-weight:700;margin-top:8px}
+.card .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.tg{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;
+  border-radius:5px;background:rgba(255,255,255,.07);color:var(--mute)}
+.tg.q{background:rgba(34,229,160,.15);color:var(--neon)}
+.tg.ev{background:rgba(95,212,255,.15);color:var(--sky)}
+.tg.al{background:rgba(242,193,78,.15);color:var(--warn)}
+.vaziocol{font-size:12px;color:var(--mute);text-align:center;padding:16px 6px;border:1px dashed var(--line);
+  border-radius:10px}
+
+/* ---------- ficha lateral ---------- */
+.fundo{position:fixed;inset:0;background:rgba(3,10,14,.6);backdrop-filter:blur(3px);z-index:40}
+.ficha{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--bg-2);z-index:41;
+  border-left:1px solid var(--line-2);overflow-y:auto;box-shadow:-30px 0 80px rgba(0,0,0,.45)}
+.fh{position:sticky;top:0;background:var(--bg-2);border-bottom:1px solid var(--line);padding:20px 22px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:14px;z-index:2}
+.fh h2{font-size:20px;line-height:1.2}
+.fh .c{font-size:12.5px;color:var(--mute);margin-top:4px}
+.fx{background:transparent;border:0;color:var(--mute);font-size:24px;cursor:pointer;line-height:1;padding:0 4px}
+.fx:hover{color:var(--txt)}
+.fabas{display:flex;gap:4px;padding:14px 22px 0}
+.fabas button{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--mute);
+  padding:9px 12px;font-size:13.5px;font-weight:600;cursor:pointer}
+.fabas button[aria-selected=true]{color:var(--neon);border-bottom-color:var(--neon)}
+.fc{padding:20px 22px 40px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lin{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);
+  font-size:14px}
+.lin:last-child{border-bottom:0}
+.lin span{color:var(--mute)}
+.lin b{font-family:'JetBrains Mono',monospace;font-weight:600}
+.opbox{border:1px solid var(--line-2);border-radius:14px;background:rgba(34,229,160,.07);padding:18px;margin-bottom:16px}
+.opbox .k{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.opbox .v{font-family:'JetBrains Mono',monospace;font-size:27px;font-weight:700;color:var(--neon);margin-top:5px}
+.opbox p{margin:10px 0 0;font-size:13px;color:#BEDECD;line-height:1.55}
+.fala{border-left:2px solid var(--neon);padding-left:14px;font-size:14px;color:#CBE3DA;line-height:1.6;
+  margin:14px 0}
+.ativ{border-left:1px solid var(--line);padding-left:16px;margin-left:5px}
+.at{position:relative;padding:0 0 18px}
+.at::before{content:'';position:absolute;left:-21px;top:5px;width:9px;height:9px;border-radius:50%;
+  background:var(--neon);box-shadow:0 0 10px var(--glow)}
+.at .d{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mute)}
+.at .t{font-size:14px;margin-top:3px}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+@media(max-width:700px){.kanban{grid-template-columns:repeat(6,minmax(200px,1fr))}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===================== ENTRADA ===================== -->
+<div class="entrada" id="entrada">
+  <div class="cartao">
+    <a href="index.html" style="text-decoration:none">
+      <div class="marca">Plataforma<b>SOLAR <span class="pro">PRO</span></b></div></a>
+
+    <!-- login -->
+    <div id="telaLogin">
+      <h2>Entrar na sua conta</h2>
+      <div class="sub" id="subLogin">Sua carteira, seu funil e suas propostas.</div>
+      <div class="campo"><label for="lEmail">E-mail</label>
+        <input type="text" id="lEmail" placeholder="voce@suaempresa.com.br" autocomplete="email"></div>
+      <button class="btn pri" id="btnEntrar" style="width:100%;padding:13px">Entrar</button>
+      <div class="erro" id="erroLogin">Não encontramos esse e-mail. Crie sua conta.</div>
+      <div class="troca">Ainda não tem conta? <a id="irCadastro">Criar agora</a></div>
+    </div>
+
+    <!-- cadastro -->
+    <div id="telaCadastro" hidden>
+      <h2>Criar sua conta</h2>
+      <div class="sub">Leva trinta segundos e não pede senha.</div>
+      <div class="campo"><label for="cNome">Seu nome</label><input type="text" id="cNome" placeholder="Nome e sobrenome"></div>
+      <div class="campo"><label for="cEmpresa">Empresa</label><input type="text" id="cEmpresa" placeholder="Nome da integradora"></div>
+      <div class="duo">
+        <div class="campo"><label for="cEmail">E-mail</label><input type="text" id="cEmail" placeholder="voce@empresa.com.br"></div>
+        <div class="campo"><label for="cFone">WhatsApp</label><input type="text" id="cFone" placeholder="(11) 99999-9999"></div>
+      </div>
+      <div class="duo">
+        <div class="campo"><label for="cCidade">Cidade</label><input type="text" id="cCidade" placeholder="Campinas, SP"></div>
+        <div class="campo"><label for="cPorte">Projetos por mês</label>
+          <select id="cPorte">
+            <option>1 a 3</option><option selected>4 a 10</option>
+            <option>11 a 30</option><option>mais de 30</option>
+          </select></div>
+      </div>
+      <button class="btn pri" id="btnCriar" style="width:100%;padding:13px">Criar conta e entrar</button>
+      <div class="erro" id="erroCad">Preencha nome e um e-mail válido.</div>
+      <div class="troca">Já tem conta? <a id="irLogin">Entrar</a></div>
+      <div class="aviso">Guardamos nome, empresa e contato para dar acesso e enviar avisos de oportunidade
+        da sua carteira. Você sai da lista quando quiser.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APLICAÇÃO ===================== -->
+<div id="app" hidden>
+  <header class="topo">
+    <div class="in">
+      <a href="index.html" style="text-decoration:none">
+        <div class="logo">Plataforma<b>SOLAR <span class="pro">PRO</span></b></div></a>
+      <div class="abas" role="tablist">
+        <button role="tab" data-v="funil" aria-selected="true">Funil</button>
+        <button role="tab" data-v="lista" aria-selected="false">Lista</button>
+        <button role="tab" data-v="conta" aria-selected="false">Minha conta</button>
+      </div>
+      <div class="user">
+        <div class="av" id="avatar">–</div>
+        <div><div class="nm" id="uNome">—</div><div class="em" id="uEmp">—</div></div>
+        <button class="btn sm" id="sair">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <div class="kpis">
+      <div><div class="k">Leads ativos</div><div class="v" id="k1">0</div><div class="d">fora de fechado e perdido</div></div>
+      <div><div class="k">Oportunidades quentes</div><div class="v neon" id="k2">0</div><div class="d">gatilho de bateria</div></div>
+      <div><div class="k">Valor do funil</div><div class="v neon" id="k3">R$ 0</div><div class="d">em negociação</div></div>
+      <div><div class="k">Ganhos no mês</div><div class="v" id="k4">R$ 0</div><div class="d">negócios fechados</div></div>
+      <div><div class="k">Conversão</div><div class="v" id="k5">0%</div><div class="d">fechados sobre o total</div></div>
+    </div>
+
+    <div class="barra">
+      <input type="text" id="busca" placeholder="Buscar por nome, cidade ou anotação…">
+      <select id="fTipo">
+        <option value="">Todos os tipos</option>
+        <option value="res">Residencial</option>
+        <option value="com">Comercial</option>
+        <option value="eletro">Eletroposto</option>
+      </select>
+      <select id="fSinal">
+        <option value="">Todos os sinais</option>
+        <option value="q">Só oportunidades quentes</option>
+        <option value="ev">Só com carro elétrico</option>
+        <option value="at">Só com tarefa atrasada</option>
+      </select>
+      <button class="btn pri" id="novo">+ Novo lead</button>
+      <button class="btn" id="csv">Exportar CSV</button>
+      <button class="btn" id="demo">Carregar exemplos</button>
+    </div>
+
+    <div id="vFunil"><div class="kanban" id="kanban"></div></div>
+
+    <div id="vLista" hidden>
+      <div class="col" style="padding:0;overflow:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead><tr id="cabLista"></tr></thead>
+          <tbody id="corpoLista"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="vConta" hidden>
+      <div class="col" style="max-width:640px;padding:24px">
+        <h3 style="font-size:17px;margin-bottom:6px">Dados da sua empresa</h3>
+        <p style="color:var(--mute);font-size:13.5px;margin:0 0 20px">
+          Aparecem no cabeçalho e no rodapé das propostas em PDF.</p>
+        <div class="duo">
+          <div class="campo"><label for="pEmpresa">Empresa</label><input type="text" id="pEmpresa"></div>
+          <div class="campo"><label for="pResp">Responsável</label><input type="text" id="pResp"></div>
+        </div>
+        <div class="duo">
+          <div class="campo"><label for="pFone">Telefone</label><input type="text" id="pFone"></div>
+          <div class="campo"><label for="pEmail">E-mail</label><input type="text" id="pEmail"></div>
+        </div>
+        <div class="duo">
+          <div class="campo"><label for="pCidade">Cidade</label><input type="text" id="pCidade"></div>
+          <div class="campo"><label for="pValidade">Validade da proposta (dias)</label>
+            <input type="number" id="pValidade" value="15" min="1"></div>
+        </div>
+        <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
+          <div class="lin"><span>Conta criada em</span><b id="cCriada">—</b></div>
+          <div class="lin"><span>Último acesso</span><b id="cAcesso">—</b></div>
+          <div class="lin"><span>Leads cadastrados</span><b id="cLeads">0</b></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ===================== FICHA DO LEAD ===================== -->
+<div class="fundo" id="fundo" hidden></div>
+<aside class="ficha" id="ficha" hidden>
+  <div class="fh">
+    <div><h2 id="fNome">—</h2><div class="c" id="fSub">—</div></div>
+    <button class="fx" id="fFechar" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="fabas" role="tablist">
+    <button role="tab" data-f="op" aria-selected="true">Oportunidade</button>
+    <button role="tab" data-f="dados" aria-selected="false">Dados</button>
+    <button role="tab" data-f="ativ" aria-selected="false">Atividades</button>
+  </div>
+  <div class="fc" id="fConteudo"></div>
+</aside>
+
+<script>
+/* =========================================================
+   CONFIGURAÇÃO — para onde vão cadastro e acessos
+   Preencha PLANILHA (Apps Script) ou DB (Supabase).
+   Vazio: tudo funciona local e nada é enviado.
+   ========================================================= */
+const PLANILHA = 'https://script.google.com/macros/s/AKfycbww-C9sdJfwz4qdr6cdP3FBVdLaakED5vJKlMXZ0Dkp_onaZrubSKpb_9dsWFPEZK1qhw/exec';
+const DB = { url:'', key:'' };
+
+/* ---------- utilidades ---------- */
+const $ = id => document.getElementById(id);
+const brl = v => (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const n0  = v => (v||0).toLocaleString('pt-BR',{maximumFractionDigits:0});
+const hoje = () => new Date().toISOString().slice(0,10);
+const dbr  = d => d ? d.split('-').reverse().join('/') : '—';
+const mem = {};
+const gv = (k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){ mem[k]=v; } };
+const lv = k =>{ try{ return localStorage.getItem(k); }catch(e){ return mem[k]??null; } };
+const jget = (k,d)=>{ try{ return JSON.parse(lv(k)||JSON.stringify(d)); }catch(e){ return d; } };
+
+function registrar(tipo, dados){
+  const linha = Object.assign({
+    aba: 'crm_eventos',
+    evento: tipo,
+    email: (usuario&&usuario.email)||null,
+    nome:  (usuario&&usuario.nome)||null,
+    empresa:(usuario&&usuario.empresa)||null,
+    origem: 'crm'
+  }, dados||{});
+  if(PLANILHA){
+    fetch(PLANILHA,{method:'POST',mode:'no-cors',keepalive:true,
+      headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(linha)}).catch(()=>{});
+  } else if(DB.url && DB.key){
+    fetch(DB.url+'/rest/v1/eventos',{method:'POST',keepalive:true,
+      headers:{'Content-Type':'application/json',apikey:DB.key,Authorization:'Bearer '+DB.key,
+               Prefer:'return=minimal'},body:JSON.stringify(linha)}).catch(()=>{});
+  }
+}
+
+
+/* ---------- máscaras de digitação ---------- */
+function mascaraTelefone(el){
+  if(!el) return;
+  el.setAttribute('inputmode','numeric');
+  el.setAttribute('maxlength','15');
+  function fmt(){
+    var v = el.value.replace(/\D/g,'').slice(0,11);
+    if(v.length === 0){ el.value=''; return; }
+    if(v.length <= 2)       el.value = '(' + v;
+    else if(v.length <= 6)  el.value = '(' + v.slice(0,2) + ') ' + v.slice(2);
+    else if(v.length <= 10) el.value = '(' + v.slice(0,2) + ') ' + v.slice(2,6) + '-' + v.slice(6);
+    else                    el.value = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+  }
+  el.addEventListener('input', fmt);
+  el.addEventListener('blur', fmt);
+  fmt();
+}
+function soNumero(el){
+  if(!el) return;
+  el.setAttribute('inputmode','decimal');
+  el.addEventListener('input', function(){
+    el.value = el.value.replace(/[^\d.,]/g,'');
+  });
+}
+function validaEmail(el){
+  if(!el) return;
+  el.setAttribute('inputmode','email');
+  el.addEventListener('blur', function(){
+    var v = el.value.trim().toLowerCase();
+    el.value = v;
+    if(v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){
+      el.style.borderColor = 'var(--red)';
+      el.title = 'E-mail parece incompleto';
+    } else {
+      el.style.borderColor = '';
+      el.title = '';
+    }
+  });
+}
+function capitaliza(el){
+  if(!el) return;
+  el.addEventListener('blur', function(){
+    el.value = el.value.trim().replace(/\s+/g,' ').replace(/(^|\s)(\p{L})/gu,
+      function(m,a,b){ return a + b.toUpperCase(); });
+  });
+}
+
+/* aplica nos campos de entrada e de perfil */
+['cFone','pFone'].forEach(function(id){ mascaraTelefone($(id)); });
+['lEmail','cEmail','pEmail'].forEach(function(id){ validaEmail($(id)); });
+['cNome','cEmpresa','cCidade','pResp','pEmpresa','pCidade'].forEach(function(id){ capitaliza($(id)); });
+
+/* ---------- sessão ---------- */
+let usuario = jget('psp_sessao', null);
+let contas  = jget('psp_contas', {});
+let perfil  = {};
+let leads   = [];
+
+const ETAPAS = ['Novo lead','Em contato','Proposta enviada','Negociação','Fechado','Perdido'];
+const FIOB   = {2019:0,2020:0,2021:0,2022:0,2023:.15,2024:.30,2025:.45,2026:.60};
+
+function chaveLeads(){ return 'psp_leads_' + (usuario ? usuario.email : 'anon'); }
+function chavePerfil(){ return 'psp_perfil_' + (usuario ? usuario.email : 'anon'); }
+
+function entrarNoApp(){
+  leads  = jget(chaveLeads(), []);
+  perfil = jget(chavePerfil(), {empresa:usuario.empresa, resp:usuario.nome,
+                                fone:usuario.fone, email:usuario.email, cidade:usuario.cidade, validade:15});
+  $('entrada').hidden = true;
+  $('app').hidden = false;
+  $('uNome').textContent = usuario.nome;
+  $('uEmp').textContent  = usuario.empresa || usuario.email;
+  $('avatar').textContent = (usuario.nome||'?').trim()[0].toUpperCase();
+  $('cCriada').textContent = dbr((usuario.criada||'').slice(0,10));
+  $('cAcesso').textContent = new Date().toLocaleString('pt-BR');
+  Object.entries({pEmpresa:'empresa',pResp:'resp',pFone:'fone',pEmail:'email',
+                  pCidade:'cidade',pValidade:'validade'}).forEach(([id,k])=>{
+    if(perfil[k]!=null) $(id).value = perfil[k];
+    $(id).addEventListener('input', ()=>{ perfil[k]=$(id).value; gv(chavePerfil(), JSON.stringify(perfil)); });
+  });
+  pintar();
+  importarDaCalculadora();
+}
+
+$('irCadastro').onclick = ()=>{ $('telaLogin').hidden=true; $('telaCadastro').hidden=false; };
+$('irLogin').onclick    = ()=>{ $('telaCadastro').hidden=true; $('telaLogin').hidden=false; };
+
+$('btnEntrar').onclick = ()=>{
+  const e = $('lEmail').value.trim().toLowerCase();
+  if(!contas[e]){ $('erroLogin').style.display='block'; return; }
+  usuario = contas[e];
+  usuario.ultimoAcesso = new Date().toISOString();
+  contas[e] = usuario;
+  gv('psp_contas', JSON.stringify(contas));
+  gv('psp_sessao', JSON.stringify(usuario));
+  registrar('login', {empresa:usuario.empresa});
+  entrarNoApp();
+};
+$('btnCriar').onclick = ()=>{
+  const e = $('cEmail').value.trim().toLowerCase();
+  const nome = $('cNome').value.trim();
+  if(!nome || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)){ $('erroCad').style.display='block'; return; }
+  usuario = {nome, email:e, empresa:$('cEmpresa').value.trim(), fone:$('cFone').value.trim(),
+             cidade:$('cCidade').value.trim(), porte:$('cPorte').value,
+             criada:new Date().toISOString(), ultimoAcesso:new Date().toISOString()};
+  contas[e] = usuario;
+  gv('psp_contas', JSON.stringify(contas));
+  gv('psp_sessao', JSON.stringify(usuario));
+  registrar('cadastro', {aba:'crm_usuarios', telefone:usuario.fone,
+                         cidade:usuario.cidade, porte:usuario.porte});
+  registrar('cadastro');
+  entrarNoApp();
+};
+$('sair').onclick = ()=>{
+  registrar('logout');
+  try{ localStorage.removeItem('psp_sessao'); }catch(e){}
+  location.reload();
+};
+
+/* ---------- regra de oportunidade ---------- */
+function avalia(c){
+  const FIOB_RS = 0.34;
+  const injet   = (c.consumo||0) * 0.30;
+  const perda   = injet * FIOB_RS * (0.60 - (FIOB[c.ano]??0)) * 12;
+  const perda28 = injet * FIOB_RS * (0.90 - (FIOB[c.ano]??0)) * 12;
+
+  const gat = [];   // gatilhos encontrados
+  let bateriaKwh = 0, vBateria = 0, vWallbox = 0, vSolar = 0;
+
+  const temSolar = !!c.ano;
+  const noturno  = (c.consumo||0) >= 600;
+
+  /* --- solar, para quem ainda não tem --- */
+  if(!temSolar && (c.consumo||0) > 0){
+    vSolar = Math.round((c.consumo/120) * 4200);      // kWp x preço médio por kWp
+    gat.push({t:'Sem solar instalado', d:'Projeto de geração é a porta de entrada.'});
+  }
+
+  /* --- bateria --- */
+  if(temSolar && c.ano <= 2023){
+    gat.push({t:'Fio B mudou a conta dele',
+              d:'Conectado em '+c.ano+', quando o pedágio era menor. Perde cerca de '+
+                brl(perda)+' por ano hoje, e '+brl(perda28)+' em 2028.'});
+  }
+  if(noturno){
+    gat.push({t:'Consumo alto',
+              d:(c.consumo)+' kWh/mês. Acima de 1.000 kWh entra na tarifa horária compulsória proposta pela ANEEL.'});
+  }
+  if(c.tipo === 'com'){
+    gat.push({t:'Comercial',
+              d:'Demanda contratada e horário de ponta abrem peak shaving, de ticket bem maior.'});
+  }
+  if(c.tipo === 'eletro'){
+    gat.push({t:'Eletroposto',
+              d:'Carregador rápido estoura demanda. BESS como pulmão evita obra de reforço.'});
+  }
+
+  const querBateria = temSolar && ((c.ano<=2023) || noturno || c.tipo!=='res');
+  if(querBateria || c.ev){
+    bateriaKwh = Math.max(5, Math.ceil((c.consumo||300)/30*0.45/5)*5);
+    vBateria = bateriaKwh * 2500;
+    if(c.tipo==='com')    vBateria = Math.round(vBateria*2.2);
+    if(c.tipo==='eletro') vBateria = 130000;
+  }
+
+  /* --- carregador veicular --- */
+  if(c.ev){
+    vWallbox = 6000;
+    gat.push({t:'Carro elétrico na garagem',
+              d:'Adiciona cerca de 200 kWh/mês na conta, quase tudo à noite. '+
+                'Wallbox de 7,4 kW e verificação do padrão de entrada.'});
+  }
+
+  const valor  = vSolar + vBateria + vWallbox;
+  const quente = gat.length > 0 && valor > 0;
+  const atrasada = c.proxData && c.proxData < hoje() && (c.etapa??0)<4;
+
+  return {perda, perda28, bateria:bateriaKwh, vSolar, vBateria, vWallbox,
+          valor:Math.round(valor), quente, atrasada, gatilhos:gat, temSolar};
+}
+const salvar = ()=> gv(chaveLeads(), JSON.stringify(leads));
+
+/* ---------- filtros ---------- */
+function filtrados(){
+  const q=($('busca').value||'').toLowerCase().trim();
+  const t=$('fTipo').value, sg=$('fSinal').value;
+  return leads.map((c,i)=>({c,i,a:avalia(c)})).filter(({c,a})=>{
+    if(t && c.tipo!==t) return false;
+    if(sg==='q'  && !a.quente) return false;
+    if(sg==='ev' && !c.ev) return false;
+    if(sg==='at' && !a.atrasada) return false;
+    if(q && !((c.nome||'')+' '+(c.cidade||'')+' '+(c.obs||'')).toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+/* ---------- kanban ---------- */
+function pintar(){
+  const ver = filtrados();
+  const kb = $('kanban'); kb.innerHTML='';
+
+  ETAPAS.forEach((nome,ei)=>{
+    const daEtapa = ver.filter(x=>(x.c.etapa??0)===ei);
+    const soma = daEtapa.reduce((t,x)=>t+(x.a.quente?x.a.valor:0),0);
+    const col = document.createElement('div');
+    col.className='col'; col.dataset.etapa=ei;
+    col.innerHTML = '<h3>'+nome+' <i>'+daEtapa.length+'<\/i><\/h3>'+
+                    '<div class="soma">'+brl(soma)+'<\/div>';
+    daEtapa.forEach(({c,i,a})=>{
+      const el=document.createElement('div');
+      el.className='card'+(a.quente?' quente':'');
+      el.draggable=true; el.dataset.i=i;
+      el.innerHTML =
+        '<div class="n">'+(c.nome||'Sem nome')+'<\/div>'+
+        '<div class="c">'+(c.cidade||'—')+(c.consumo?' · '+n0(c.consumo)+' kWh/mês':'')+'<\/div>'+
+        (a.quente?'<div class="v">'+brl(a.valor)+'<\/div>':'')+
+        '<div class="tags">'+
+          (a.quente?'<span class="tg q">oportunidade<\/span>':'')+
+          (c.ev?'<span class="tg ev">carro elétrico<\/span>':'')+
+          (a.atrasada?'<span class="tg al">tarefa atrasada<\/span>':'')+
+          (c.proxData&&!a.atrasada?'<span class="tg">'+dbr(c.proxData)+'<\/span>':'')+
+        '<\/div>';
+      el.onclick = ()=>abrirFicha(i);
+      el.ondragstart = ev=>{ ev.dataTransfer.setData('text/plain', i); el.classList.add('arrastando'); };
+      el.ondragend   = ()=> el.classList.remove('arrastando');
+      col.appendChild(el);
+    });
+    if(!daEtapa.length) col.insertAdjacentHTML('beforeend','<div class="vaziocol">vazio<\/div>');
+
+    col.ondragover = ev=>{ ev.preventDefault(); col.classList.add('alvo'); };
+    col.ondragleave= ()=> col.classList.remove('alvo');
+    col.ondrop = ev=>{
+      ev.preventDefault(); col.classList.remove('alvo');
+      const i = +ev.dataTransfer.getData('text/plain');
+      if(isNaN(i)) return;
+      const antes = leads[i].etapa??0;
+      leads[i].etapa = ei;
+      leads[i].hist = leads[i].hist||[];
+      leads[i].hist.unshift({d:hoje(), t:'Movido de "'+ETAPAS[antes]+'" para "'+ETAPAS[ei]+'"'});
+      salvar(); registrar('mover_lead',{de:ETAPAS[antes], para:ETAPAS[ei]}); pintar();
+    };
+    kb.appendChild(col);
+  });
+
+  /* indicadores */
+  const ativos = leads.filter(c=>(c.etapa??0)<4);
+  const quentes= ativos.filter(c=>avalia(c).quente);
+  const funil  = quentes.reduce((t,c)=>t+avalia(c).valor,0);
+  const fech   = leads.filter(c=>(c.etapa??0)===4);
+  $('k1').textContent = ativos.length;
+  $('k2').textContent = quentes.length;
+  $('k3').textContent = brl(funil);
+  $('k4').textContent = brl(fech.reduce((t,c)=>t+avalia(c).valor,0));
+  $('k5').textContent = leads.length ? Math.round(fech.length/leads.length*100)+'%' : '0%';
+  $('cLeads').textContent = leads.length;
+
+  /* lista */
+  const cab = ['Cliente','Cidade','Tipo','Consumo','Etapa','Oportunidade','Próxima ação'];
+  $('cabLista').innerHTML = cab.map(h=>'<th style="text-align:left;padding:12px 14px;font-size:10.5px;'+
+    'letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--line)">'+
+    h+'<\/th>').join('');
+  $('corpoLista').innerHTML = ver.map(({c,i,a})=>
+    '<tr style="cursor:pointer" data-i="'+i+'">'+
+    '<td style="padding:12px 14px;font-weight:600;border-bottom:1px solid var(--line)">'+(c.nome||'—')+'<\/td>'+
+    '<td style="padding:12px 14px;color:var(--mute);border-bottom:1px solid var(--line)">'+(c.cidade||'—')+'<\/td>'+
+    '<td style="padding:12px 14px;color:var(--mute);border-bottom:1px solid var(--line)">'+
+      (c.tipo==='com'?'Comercial':c.tipo==='eletro'?'Eletroposto':'Residencial')+'<\/td>'+
+    '<td style="padding:12px 14px;font-family:JetBrains Mono,monospace;border-bottom:1px solid var(--line)">'+
+      n0(c.consumo)+'<\/td>'+
+    '<td style="padding:12px 14px;color:var(--mute);border-bottom:1px solid var(--line)">'+ETAPAS[c.etapa??0]+'<\/td>'+
+    '<td style="padding:12px 14px;font-family:JetBrains Mono,monospace;color:var(--neon);border-bottom:1px solid var(--line)">'+
+      (a.quente?brl(a.valor):'—')+'<\/td>'+
+    '<td style="padding:12px 14px;color:'+(a.atrasada?'var(--warn)':'var(--mute)')+';border-bottom:1px solid var(--line)">'+
+      dbr(c.proxData)+'<\/td><\/tr>').join('');
+  $('corpoLista').querySelectorAll('tr').forEach(tr=>tr.onclick=()=>abrirFicha(+tr.dataset.i));
+}
+
+/* ---------- ficha lateral ---------- */
+let fAtual = null, fAba = 'op';
+function abrirFicha(i){
+  fAtual = i;
+  const c = leads[i], a = avalia(c);
+  $('fNome').textContent = c.nome || 'Sem nome';
+  $('fSub').textContent = [c.cidade, c.tel, ETAPAS[c.etapa??0]].filter(Boolean).join(' · ');
+  $('fundo').hidden=false; $('ficha').hidden=false;
+  pintarFicha();
+  registrar('abrir_lead');
+}
+function pintarFicha(){
+  const c = leads[fAtual], a = avalia(c);
+  document.querySelectorAll('.fabas button').forEach(b=>b.setAttribute('aria-selected', b.dataset.f===fAba));
+  const box = $('fConteudo');
+
+  if(fAba==='op'){
+    const linhas = [];
+    if(a.vSolar)   linhas.push(['Sistema fotovoltaico', ((c.consumo||0)/120).toFixed(2)+' kWp', a.vSolar]);
+    if(a.vBateria) linhas.push(['Banco de baterias', a.bateria+' kWh', a.vBateria]);
+    if(a.vWallbox) linhas.push(['Carregador veicular', '7,4 kW', a.vWallbox]);
+
+    box.innerHTML =
+      '<div class="opbox"><div class="k">Oportunidade estimada<\/div>'+
+      '<div class="v">'+(a.quente?brl(a.valor):'a qualificar')+'<\/div>'+
+      (linhas.length
+        ? '<div style="margin-top:14px">'+linhas.map(l=>
+            '<div class="lin" style="border-color:rgba(34,229,160,.2)"><span>'+l[0]+
+            ' &middot; '+l[1]+'<\/span><b style="color:var(--neon)">'+brl(l[2])+'<\/b><\/div>').join('')+'<\/div>'
+        : '<p>Ainda sem gatilho claro. Complete os dados na aba ao lado.<\/p>')+
+      '<\/div>'+
+
+      (a.gatilhos.length
+        ? '<label style="margin-top:4px">Por que este cliente<\/label>'+
+          a.gatilhos.map(g=>
+            '<div class="check ok" style="margin-bottom:8px"><div class="dot"><\/div><div>'+
+            '<h3>'+g.t+'<\/h3><p>'+g.d+'<\/p><\/div><\/div>').join('')
+        : '')+
+
+      (a.quente ? '<label style="margin-top:18px">Mensagem pronta<\/label><div class="fala">"'+
+        (c.nome||'Cliente').split(' ')[0]+', '+
+        (a.temSolar
+          ? 'passei revisando os sistemas que instalamos e o seu entrou numa mudança de regra. Quando montamos em '+
+            c.ano+', a energia que sobrava voltava quase inteira; hoje ela volta pagando pedágio — cerca de '+
+            brl(a.perda)+' por ano, e '+brl(a.perda28)+' em 2028.'
+          : 'fiz o dimensionamento do seu sistema e o retorno ficou interessante.')+
+        (c.ev ? ' Com o carro elétrico, a recarga à noite pesa ainda mais.' : '')+
+        (a.vBateria ? ' Com '+a.bateria+' kWh de bateria essa energia fica na sua casa.' : '')+
+        ' Posso te mandar o número fechado?"<\/div>' : '')+
+
+      '<div class="acoes">'+
+        (c.tel?'<button class="btn pri sm" id="aZap">Enviar no WhatsApp<\/button>':'')+
+        '<button class="btn sm" id="aPdf">Gerar proposta em PDF<\/button>'+
+        '<button class="btn sm" id="aAvanca">Avançar etapa<\/button>'+
+        '<button class="btn sm dan" id="aDel">Excluir<\/button>'+
+      '<\/div>';
+
+    if($('aZap')) $('aZap').onclick=()=>{
+      const t = a.quente
+        ? 'Olá '+(c.nome||'').split(' ')[0]+', aqui é da '+(perfil.empresa||'nossa equipe')+
+          '. Revisando os sistemas que instalamos, o seu entrou numa mudança de regra que está custando cerca de '+
+          brl(a.perda)+' por ano. Posso te mostrar como resolver?'
+        : 'Olá '+(c.nome||'').split(' ')[0]+', aqui é da '+(perfil.empresa||'nossa equipe')+
+          '. Posso te apresentar uma proposta de energia solar com armazenamento?';
+      registrar('whatsapp');
+      window.open('https://wa.me/55'+(c.tel||'').replace(/\D/g,'')+'?text='+encodeURIComponent(t),'_blank','noopener');
+    };
+    $('aPdf').onclick = ()=>{ registrar('proposta_pdf'); proposta(c,a); };
+    $('aAvanca').onclick = ()=>{
+      const antes=c.etapa??0; c.etapa=Math.min(5,antes+1);
+      c.hist=c.hist||[]; c.hist.unshift({d:hoje(),t:'Avançou para "'+ETAPAS[c.etapa]+'"'});
+      salvar(); pintar(); abrirFicha(fAtual);
+    };
+    $('aDel').onclick = ()=>{
+      if(!confirm('Excluir este lead?')) return;
+      leads.splice(fAtual,1); salvar(); fechar(); pintar();
+    };
+  }
+
+  if(fAba==='dados'){
+    box.innerHTML =
+      '<div class="duo">'+
+      campo('Nome do cliente','d_nome',c.nome||'','text','Ex.: Marcos Andrade')+
+      campo('WhatsApp','d_tel',c.tel||'','text','(11) 99999-9999')+
+      campo('Cidade','d_cidade',c.cidade||'','text','Ex.: Campinas')+
+      campo('E-mail','d_email',c.email||'','text','cliente@email.com')+
+      campo('Potência (kWp)','d_kwp',c.kwp||'','text','Ex.: 5,5')+
+      campo('Consumo (kWh/mês)','d_consumo',c.consumo||'','text','Ex.: 600')+
+      '<\/div>'+
+      '<div class="duo">'+
+      sel('Tipo','d_tipo',[['res','Residencial'],['com','Comercial'],['eletro','Eletroposto']],c.tipo||'res')+
+      sel('Ano da instalação','d_ano',[[0,'Ainda não tem solar'],[2019,2019],[2020,2020],[2021,2021],
+          [2022,2022],[2023,2023],[2024,2024],[2025,2025],[2026,2026]], c.ano||0)+
+      '<\/div>'+
+      '<div class="campo" style="margin-top:4px"><label>Observações<\/label>'+
+      '<textarea id="d_obs">'+(c.obs||'')+'<\/textarea><\/div>'+
+      '<label style="margin-top:14px">Carro elétrico<\/label>'+
+      '<label style="text-transform:none;letter-spacing:0;font-weight:400;font-size:14px;color:var(--txt);'+
+      'display:flex;gap:9px;align-items:center"><input type="checkbox" id="d_ev" '+(c.ev?'checked':'')+
+      ' style="width:18px;height:18px;accent-color:var(--neon)"> Tem ou vai comprar carro elétrico<\/label>'+
+      '<div class="acoes"><button class="btn pri sm" id="aSalvar">Salvar alterações<\/button><\/div>';
+    mascaraTelefone($('d_tel'));
+    validaEmail($('d_email'));
+    capitaliza($('d_nome')); capitaliza($('d_cidade'));
+    soNumero($('d_kwp')); soNumero($('d_consumo'));
+
+    $('aSalvar').onclick = ()=>{
+      Object.assign(c,{nome:$('d_nome').value.trim(), tel:$('d_tel').value.trim(),
+        cidade:$('d_cidade').value.trim(), email:$('d_email').value.trim(),
+        kwp:parseFloat(String($('d_kwp').value).replace(',','.'))||0,
+        consumo:parseInt(String($('d_consumo').value).replace(/\D/g,''))||0,
+        tipo:$('d_tipo').value, ano:parseInt($('d_ano').value)||0, obs:$('d_obs').value.trim(),
+        ev:$('d_ev').checked});
+      c.hist=c.hist||[]; c.hist.unshift({d:hoje(),t:'Dados atualizados'});
+      salvar(); pintar(); abrirFicha(fAtual);
+    };
+  }
+
+  if(fAba==='ativ'){
+    const h = c.hist||[];
+    box.innerHTML =
+      '<div class="duo"><div class="campo"><label>Próxima ação<\/label>'+
+      '<input type="text" id="n_prox" value="'+(c.prox||'')+'" placeholder="Ex.: ligar para apresentar proposta"><\/div>'+
+      '<div class="campo"><label>Quando<\/label><input type="date" id="n_data" value="'+(c.proxData||'')+'"><\/div><\/div>'+
+      '<div class="campo"><label>Registrar anotação<\/label>'+
+      '<textarea id="n_nota" placeholder="O que aconteceu nesse contato?"><\/textarea><\/div>'+
+      '<div class="acoes"><button class="btn pri sm" id="aNota">Registrar<\/button><\/div>'+
+      '<div style="margin-top:26px"><label>Histórico<\/label>'+
+      (h.length ? '<div class="ativ">'+h.map(x=>'<div class="at"><div class="d">'+dbr(x.d)+'<\/div>'+
+        '<div class="t">'+x.t+'<\/div><\/div>').join('')+'<\/div>'
+                : '<p style="color:var(--mute);font-size:13.5px">Nada registrado ainda.<\/p>')+'<\/div>';
+    $('aNota').onclick = ()=>{
+      c.prox = $('n_prox').value.trim(); c.proxData = $('n_data').value;
+      const nota = $('n_nota').value.trim();
+      c.hist = c.hist||[];
+      if(nota) c.hist.unshift({d:hoje(), t:nota});
+      if(c.prox) c.hist.unshift({d:hoje(), t:'Próxima ação: '+c.prox+' em '+dbr(c.proxData)});
+      salvar(); registrar('anotacao'); pintar(); abrirFicha(fAtual);
+    };
+  }
+}
+function campo(rot,id,val,tipo,dica){
+  return '<div class="campo"><label>'+rot+'<\/label><input type="'+(tipo||'text')+'" id="'+id+
+         '" value="'+val+'" placeholder="'+(dica||'')+'"><\/div>';
+}
+function sel(rot,id,ops,val){
+  return '<div class="campo"><label>'+rot+'<\/label><select id="'+id+'">'+
+    ops.map(o=>'<option value="'+o[0]+'"'+(String(o[0])===String(val)?' selected':'')+'>'+o[1]+'<\/option>').join('')+
+    '<\/select><\/div>';
+}
+function fechar(){ $('fundo').hidden=true; $('ficha').hidden=true; fAtual=null; }
+$('fFechar').onclick = fechar;
+$('fundo').onclick = fechar;
+document.querySelectorAll('.fabas button').forEach(b=>b.onclick=()=>{ fAba=b.dataset.f; pintarFicha(); });
+
+/* ---------- proposta em PDF ---------- */
+function proposta(c,a){
+  const hj=new Date(), val=new Date(hj.getTime()+(+(perfil.validade||15))*86400000);
+  const d=x=>x.toLocaleDateString('pt-BR');
+  const html = ['<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">',
+  '<title>Proposta '+(c.nome||'')+'<\/title>',
+  '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">',
+  '<style>',
+  '*{box-sizing:border-box}body{margin:0;font-family:Inter,sans-serif;color:#0F1E27;background:#fff;line-height:1.55}',
+  '.pg{max-width:780px;margin:0 auto;padding:44px 40px}',
+  '.cap{background:#07131A;color:#EAF3F6;padding:34px 40px;border-radius:0 0 22px 22px;margin:-44px -40px 30px}',
+  '.cap .e{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#8FA3AD}',
+  '.cap h1{margin:8px 0 0;font-size:30px;letter-spacing:-.03em}.cap h1 em{font-style:normal;color:#22E5A0}',
+  '.cap .s{color:#8FA3AD;font-size:13px;margin-top:10px}',
+  'h2{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#0E9F63;margin:28px 0 10px}',
+  '.bx{border:1px solid #DDE6E3;border-radius:14px;padding:18px 20px;margin-bottom:12px}',
+  '.l{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid #EEF3F1;font-size:14px}',
+  '.l:last-child{border-bottom:0}.l span{color:#5C7079}.l b{font-family:JetBrains Mono,monospace}',
+  '.bg{background:#F2FBF7;border:1px solid #BEE9D6;border-radius:16px;padding:22px;text-align:center;margin:16px 0}',
+  '.bg .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5C7079}',
+  '.bg .v{font-family:JetBrains Mono,monospace;font-size:36px;font-weight:700;color:#0E9F63;margin-top:6px}',
+  '.rod{margin-top:32px;padding-top:16px;border-top:1px solid #DDE6E3;font-size:11.5px;color:#7C8E96}',
+  '.as{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:38px}',
+  '.as div{border-top:1px solid #9BAAB1;padding-top:8px;font-size:12px;color:#5C7079;text-align:center}',
+  '.bt{position:fixed;right:20px;bottom:20px;background:#22E5A0;color:#052018;border:0;border-radius:12px;',
+  'padding:14px 22px;font:700 14px Inter,sans-serif;cursor:pointer}',
+  '@media print{.bt{display:none}.cap,.bg{-webkit-print-color-adjust:exact;print-color-adjust:exact}}',
+  '<\/style><\/head><body><div class="pg">',
+  '<div class="cap"><div class="e">'+(perfil.empresa||'Sua Integradora')+'<\/div>',
+  '<h1>Proposta de <em>energia com armazenamento<\/em><\/h1>',
+  '<div class="s">'+(c.nome||'Cliente')+(c.cidade?' · '+c.cidade:'')+' · '+d(hj)+' · válida até '+d(val)+'<\/div><\/div>',
+  '<h2>Situação atual<\/h2><div class="bx">',
+  '<div class="l"><span>Consumo médio<\/span><b>'+n0(c.consumo)+' kWh/mês<\/b><\/div>',
+  '<div class="l"><span>Conta estimada<\/span><b>'+brl((c.consumo||0)*(c.tarifa||1.05))+'/mês<\/b><\/div>',
+  (c.ano?'<div class="l"><span>Sistema instalado<\/span><b>'+(c.kwp||'—')+' kWp · '+c.ano+'<\/b><\/div>':''),
+  '<\/div>',
+  (a.quente?'<h2>O que mudou desde a instalação<\/h2><div class="bx">'+
+    '<div class="l"><span>Perda anual hoje com Fio B<\/span><b>'+brl(a.perda)+'<\/b><\/div>'+
+    '<div class="l"><span>Projeção com Fio B a 90% em 2028<\/span><b>'+brl(a.perda*1.5)+'<\/b><\/div><\/div>':''),
+  '<h2>Solução proposta<\/h2><div class="bx">',
+  '<div class="l"><span>Banco de baterias<\/span><b>'+a.bateria+' kWh<\/b><\/div>',
+  (c.ev?'<div class="l"><span>Carregador veicular<\/span><b>7,4 kW<\/b><\/div>':''),
+  '<div class="l"><span>Backup em falta de energia<\/span><b>Incluído<\/b><\/div><\/div>',
+  '<div class="bg"><div class="k">Investimento<\/div><div class="v">'+brl(a.valor)+'<\/div><\/div>',
+  '<div class="as"><div>'+(perfil.resp||'Responsável técnico')+'<\/div><div>'+(c.nome||'Cliente')+'<\/div><\/div>',
+  '<div class="rod">'+[perfil.empresa,perfil.fone,perfil.email,perfil.cidade].filter(Boolean).join(' · ')+
+  '<br>Valores e dimensionamento são estimativas de apoio comercial, sujeitas a vistoria técnica e ao parecer ',
+  'de acesso da distribuidora.<\/div><\/div>',
+  '<button class="bt" onclick="window.print()">Salvar como PDF<\/button><\/body><\/html>'].join('');
+  const w = window.open('','_blank');
+  if(!w){ alert('Libere as janelas pop-up para gerar a proposta.'); return; }
+  w.document.write(html); w.document.close();
+}
+
+/* ---------- ações gerais ---------- */
+$('novo').onclick = ()=>{
+  leads.unshift({nome:'', tipo:'res', etapa:0, consumo:0, tarifa:1.05, ano:2023, hist:[],
+                 criado:hoje()});
+  salvar(); pintar();
+  fAtual = 0; fAba = 'dados';
+  $('fNome').textContent = 'Novo lead';
+  $('fSub').textContent = 'Preencha os dados e salve';
+  $('fundo').hidden=false; $('ficha').hidden=false;
+  pintarFicha();
+  setTimeout(function(){ var n=$('d_nome'); if(n) n.focus(); }, 60);
+  registrar('novo_lead');
+};
+$('demo').onclick = ()=>{
+  leads = [
+    {nome:'Marcos Andrade',tel:'11988887777',cidade:'Campinas',tipo:'res',kwp:5.2,consumo:620,ano:2023,
+     tarifa:1.03,etapa:1,ev:false,obs:'Reclamou que a conta subiu',prox:'Ligar com a conta na mão',
+     proxData:'2026-09-10',hist:[{d:'2026-09-02',t:'Primeiro contato por telefone'}]},
+    {nome:'Padaria São Jorge',tel:'19997776666',cidade:'Valinhos',tipo:'com',kwp:18.7,consumo:2400,ano:2022,
+     tarifa:0.98,etapa:2,ev:true,obs:'Vai comprar van elétrica',prox:'Follow-up da proposta',
+     proxData:'2026-09-25',hist:[{d:'2026-09-05',t:'Proposta enviada por e-mail'}]},
+    {nome:'Clínica Vida',cidade:'Campinas',tipo:'com',kwp:12,consumo:1500,ano:2021,tarifa:1.03,etapa:0,hist:[]},
+    {nome:'Renata Lopes',tel:'11955554444',cidade:'Indaiatuba',tipo:'res',kwp:6.6,consumo:780,ano:2024,
+     tarifa:1.05,etapa:3,ev:true,obs:'Aguardando aprovação do financiamento',hist:[]},
+    {nome:'Posto Estrada Nova',cidade:'Itatiba',tipo:'eletro',consumo:4200,ano:0,tarifa:0.95,etapa:0,
+     obs:'Quer avaliar eletroposto na rodovia',hist:[]},
+    {nome:'Sítio Boa Vista',cidade:'Itatiba',tipo:'res',kwp:9.9,consumo:1100,ano:2025,tarifa:1.05,etapa:4,hist:[]}
+  ].concat(leads);
+  salvar(); pintar();
+};
+$('csv').onclick = ()=>{
+  if(!leads.length){ alert('Nenhum lead para exportar.'); return; }
+  const cab='nome;telefone;email;cidade;tipo;kwp;consumo;ano;etapa;carro eletrico;oportunidade;proxima acao;data;observacoes';
+  const linhas = leads.map(c=>{ const a=avalia(c);
+    return [c.nome,c.tel||'',c.email||'',c.cidade||'',c.tipo,c.kwp||'',c.consumo||'',c.ano||'',
+      ETAPAS[c.etapa??0],c.ev?'sim':'nao',a.quente?a.valor:'',c.prox||'',c.proxData||'',
+      (c.obs||'').replace(/;/g,',')].join(';'); });
+  const blob=new Blob(['\ufeff'+cab+'\n'+linhas.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='funil-solar-pro.csv'; a.click();
+  registrar('exportar_csv');
+};
+['busca','fTipo','fSinal'].forEach(id=>{
+  $(id).addEventListener('input',pintar); $(id).addEventListener('change',pintar);
+});
+document.querySelectorAll('.abas button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.abas button').forEach(x=>x.setAttribute('aria-selected', x===b));
+  $('vFunil').hidden = b.dataset.v!=='funil';
+  $('vLista').hidden = b.dataset.v!=='lista';
+  $('vConta').hidden = b.dataset.v!=='conta';
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !$('ficha').hidden) fechar(); });
+
+
+/* =========================================================
+   PONTE: recebe um dimensionamento da Calculadora Solar PRO
+   Formato do link que a calculadora deve abrir:
+   crm-solar-pro.html?lead=1&nome=Marcos&tel=11988887777&cidade=Campinas
+     &kwp=6.5&consumo=780&tarifa=1.03&ano=2023&ev=1&tipo=res&obs=texto
+   ========================================================= */
+function leadDaURL(){
+  const P = new URLSearchParams(location.search);
+  if(P.get('lead') !== '1') return null;
+  const n = v => { const x = parseFloat(String(v||'').replace(',','.')); return isFinite(x) ? x : 0; };
+  return {
+    nome:    P.get('nome')   || 'Cliente da calculadora',
+    tel:     (P.get('tel')   || '').replace(/\D/g,''),
+    email:   P.get('email')  || '',
+    cidade:  P.get('cidade') || '',
+    tipo:    ['res','com','eletro'].includes(P.get('tipo')) ? P.get('tipo') : 'res',
+    kwp:     n(P.get('kwp')),
+    consumo: Math.round(n(P.get('consumo'))),
+    tarifa:  n(P.get('tarifa')) || 1.05,
+    ano:     parseInt(P.get('ano')) || 0,
+    ev:      P.get('ev') === '1',
+    obs:     P.get('obs') || '',
+    etapa:   0,
+    origem:  'calculadora',
+    criado:  hoje(),
+    hist:    [{d:hoje(), t:'Importado da Calculadora Solar PRO'}]
+  };
+}
+
+function importarDaCalculadora(){
+  const novo = leadDaURL();
+  if(!novo) return;
+
+  /* nao duplica: mesmo nome e consumo importados no mesmo dia */
+  const repetido = leads.some(c => c.origem==='calculadora' && c.nome===novo.nome &&
+                                   c.consumo===novo.consumo && c.criado===novo.criado);
+  if(!repetido){
+    leads.unshift(novo);
+    salvar();
+    registrar('lead_importado', {detalhe: novo.cidade || ''});
+  }
+  pintar();
+  abrirFicha(0);
+
+  /* aviso no topo */
+  const a = avalia(leads[0]);
+  const aviso = document.createElement('div');
+  aviso.style.cssText = 'position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;'+
+    'background:var(--neon);color:#052018;font-weight:700;padding:13px 22px;border-radius:12px;'+
+    'box-shadow:0 8px 30px rgba(0,0,0,.35);font-size:14.5px';
+  aviso.textContent = 'Projeto importado da calculadora' +
+    (a.quente ? ' — oportunidade de ' + brl(a.valor) : '');
+  document.body.appendChild(aviso);
+  setTimeout(()=>aviso.remove(), 5000);
+
+  /* limpa a URL para nao reimportar ao recarregar */
+  if(history.replaceState) history.replaceState(null,'',location.pathname);
+}
+
+/* ---------- início ---------- */
+if(new URLSearchParams(location.search).get('lead') === '1' && !usuario){
+  $('subLogin').innerHTML = '<b style="color:var(--neon)">Você chegou com um projeto da calculadora.<\/b><br>'+
+    'Entre ou crie sua conta e ele entra no seu funil.';
+}
+if(usuario){ registrar('retorno'); entrarNoApp(); }
+</script>
+</body>
+</html>
